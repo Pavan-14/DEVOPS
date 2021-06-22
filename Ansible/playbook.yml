@@ -1,0 +1,6 @@
+---
+- name: this is sample playbook to install some packages in slave nodes
+  hosts: all
+  become: true
+  roles:
+    - apache-git

@@ -1,0 +1,41 @@
+---
+- name: This is sample playbook for install nginx
+  hosts: all
+  become: true
+  tasks:
+  # removing httpd
+   - name: removed httpd
+     yum:
+      name: httpd
+      state: absent
+     when: ansible_os_family == "RedHat"
+  # removing httpd
+   - name: install nginx
+     apt:
+      name: apache2
+      state: absent
+     when: ansible_os_family == "Debian"
+   # installing Nginx in redhat
+   - name: install nginx
+     yum:
+      name: nginx
+      state: present
+     when: ansible_os_family == "RedHat"
+   # nginx starting stage in RedHat
+   - name: start nginx
+     service:
+      name: nginx
+      state: started
+     when: ansible_os_family == "RedHat"
+   # install nginx in Debian 
+   - name: installation nginx
+     apt:
+      name: nginx
+      state: present
+     when: ansible_os_family == "Debian"
+   # nginx starting in Debian
+   - name: start nginx
+     service:
+      name: nginx
+      state: started
+     when: ansible_os_family == "Debian"

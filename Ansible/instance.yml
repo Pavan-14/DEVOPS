@@ -1,0 +1,13 @@
+---
+- name: creating instance by using playbook
+  hosts: localhost
+  tasks:
+    - name: lanching instance
+      amazon.aws.ec2:
+        instance_type: t2.micro
+        image: ami-0aeeebd8d2ab47354 
+        wait: yes
+        group: webservers
+        count: 1
+        vpc_subnet_id: subnet-02435b4301237c318
+        assign_public_ip: yes

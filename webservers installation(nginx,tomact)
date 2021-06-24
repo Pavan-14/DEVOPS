@@ -1,0 +1,107 @@
+Nginx Installation on Linux EC2:
+================================
+	sudo amazon-linux-extras install nginx1
+	sudo service nginx status
+	sudo chkconfig nginx on 
+	
+	check version:
+	--------------
+	check by using ===> nginx -v (or) nginx -V
+	
+	sudo service nginx restart
+	
+	check:
+	------
+	Then open browser and enter "http://instance-ip:80". you will see Welcome to nginx! message
+	
+	
+Apache web-server Installation in Linux:
+----------------------------------------
+----------------------------------------
+	#!/bin/bash
+	sudo su
+	yum update -y
+	yum install httpd -y
+	service httpd start
+	service httpd on
+	
+	
+Tomcat server Installation steps in Linux EC2:
+==============================================
+step 0 : frist we need to install "java" in EC2.
+			yum update -y
+			yum install java -y
+
+step 1 : login into EC2.
+
+step 2 : go to this link https://tomcat.apache.org/download-90.cgi .  select the version and copy the "tar.gz (pgp, sha512)"
+
+step 3 : cd /opt
+
+step 4 : wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.46/bin/apache-tomcat-9.0.46.tar.gz
+		 incase wget command not found install wget ==> yum install wget -y
+
+step 5 : unzip by using "tar -xvzf apache-tomcat-9.0.46.tar.gz"
+
+step 6 : cd apache-tomcat-9.0.46/
+
+step 7 : cd bin
+
+step 8 : To start the Tomcat use "./startup.sh"
+			check tomcat runing or not "http://instance-ip:8080/"
+			
+step 9 : you'll need to edit the Manager's context.xml file.
+
+		to find "context.xml"  where available===>  find / -name context.xml
+		
+		we need to edit /opt/apache-tomcat-9.0.46/webapps/host-manager/META-INF/context.xml
+						/opt/apache-tomcat-9.0.46/webapps/manager/META-INF/context.xml
+							comment it:
+							<!--  <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+									allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" /> -->
+step 10 : any changes in Tomcat configuration we need to shutdown and restart.
+
+			./shutdown.sh
+step 11 : ./startup.sh
+
+step 12 : we need to enter user credenticals in "Conf"
+
+		  cd /opt/apache-tomcat-9.0.46/conf
+		  
+		  vi tomcat-users.xml
+		  
+			 <role rolename="manager-gui"/>
+			 <role rolename="manager-script"/>
+			 <role rolename="manager-jmx"/>
+			 <role rolename="manager-status"/>
+			 <user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
+			 <user username="deployer" password="deployer" roles="manager-script"/>
+			 <user username="tomcat" password="tomcat" roles="manager-gui"/>
+			 
+step 13 : 	cd ..
+			cd bin
+			./shutdown.sh
+			./startup.sh
+			
+			
+step 14 : change port 8080 to 8090
+
+			cd /opt/apache-tomcat-9.0.46/conf
+			vi server.xml
+			
+			<Connector port="8090" protocol="HTTP/1.1"
+              connectionTimeout="20000"
+               redirectPort="8443" />
+			   
+			cd ..
+			cd bin
+			./shutdown.sh
+			./startup.sh
+			   
+
+
+
+
+
+
+

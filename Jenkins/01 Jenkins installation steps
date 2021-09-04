@@ -1,0 +1,224 @@
+								How we Install Jenkins in EC2 Linux
+--------------------------------------------------------------------------------------------------
+
+setp 1: create ec2 instance.
+step 2: open git bash where your pem key is available and connect to ec2 machine.
+
+step 3:
+		sudo su
+		yum update -y
+		
+		prerequisite: for jenkins
+		--------------------------
+		java -version ===> check java available or not
+		if no : yum install java -y
+		
+		wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+
+		rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+		
+		yum update -y  or  sudo yum upgrade
+
+		yum install jenkins -y
+
+		service jenkins status
+
+		service jenkins start
+step 4:		
+		
+		goto chrome and http://i.p:8080
+		
+		sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+		Plugins:
+		--------
+			a) Install suggested plugins
+			b) select plugins to install
+
+		Create First Admin User:
+		------------------------
+			name : pavan
+			Password:
+			confirm Password:
+			full Name:
+			email:
+		Getting Started:
+		----------------
+			Instance Configuration
+			Jenkins URL:	http://3.87.83.205:8080/
+			
+			enter password from ec2-linux by using thr command: "cat /var/lib/jenkins/secrets/initialAdminPassword"
+			
+			click on "save&finish"
+			
+			you get a meassage:
+				Jenkins is ready!
+				Your Jenkins setup is complete.
+			
+			click on : start using jenkins.
+-------------------------------------step 5 additional stuff---------------------------------------------------------		
+step 5:
+			Create User in Jenkins:
+			-----------------------
+			click on Manage Jenkins -> in secuirty "click on Manage Users" -> click on Create User
+			
+			
+create project/job by using Freestyle project:
+----------------------------------------------
+steps:
+------
+	1. click on new item -> select  freestyle project
+	
+	2. add description -> go to Build section -> add Build step
+		--------------------------------
+		for this select "Execute shell"
+		echo "this is job01"
+		date
+		--------------------------------
+	3. click on apply,save.
+	
+	4. click on "Build now"
+	
+	5. click on in "Build history" and Click on "Console Output"
+
+
+Scenario:
+---------
+Q) I have created 3 Jobs/projects. i have to build these projects one by one automatically. for this follow this process:
+
+Ans)step 1:  create job01 with Build steps -> while creating go to "Post-build Actions"-> click on  "ADD Post build action" -> click on "Build other Projects" -> type job02
+	
+	step 2:  create job02 with Build steps.
+	
+	step 3:  create job03 with Build steps -> while creating go to "Build triggers" -> Tick "Build after other projects are build" -> Type job02 
+	
+	step 4: Go to job01 and click on "Build Now" ==> then observe "Queue" ==> click on "Build History" ==> all 3 jobs are builded.
+	
+
+Note:
+-----
+		Upstream Project: job01 is the Upstream project for job02.
+		-----------------
+		Downstream Project: job03 is the downstream project for job02
+		-------------------
+			
+			
+--------------------------------------------------------------------------------------------------------------------------			
+										How we Install Jenkins in EC2 Ubuntu
+--------------------------------------------------------------------------------------------------------------------------
+
+ubuntu jenkins installation
+---------------------------
+	sudo apt update
+	sudo apt install openjdk-11-jdk
+	java -version
+	wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+	sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+	sudo apt update
+	sudo apt install jenkins
+	systemctl status jenkins
+	sudo systemctl start jenkins
+	sudo systemctl enable jenkins
+	sudo systemctl status jenkins
+
+	Adjusting Firewall:
+	-------------------
+	sudo ufw allow 8080
+	sudo ufw status
+
+	For Password:
+	-------------
+	sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+	
+
+
+====================================Additional Notes===================================================
+
+Java Installation:
+-------------------
+	sudo apt update
+	(sudo apt search openjdk) optional
+	sudo apt install openjdk-11-jdk
+	java -version
+Configure the Java Home Location: (optional)
+--------------------------------------------
+	readlink -f $(which java)
+	JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+	echo $JAVA_HOME
+	export JAVA_HOME
+	PATH=$PATH:$JAVA_HOME
+
+Jenkins Installation:
+----------------------
+	Go inside the website: https://www.jenkins.io/doc/book/installing/linux/#debianubuntu
+	
+	wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+	sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+	sudo apt-get update
+	sudo apt-get install jenkins
+	Start the Jenkins:
+	------------------
+		sudo systemctl start jenkins
+
+		sudo systemctl status jenkins
+		
+		sudo systemctl enable jenkins
+
+
+Adjusting Firewall: (optional)
+------------------------------
+	sudo ufw allow 8080
+	sudo ufw status
+
+	note:
+	ubuntu@ip-10-10-11-150:~$ sudo ufw status
+	Status: inactive
+	ubuntu@ip-10-10-11-150:~$ sudo ufw allow OpenSSH
+	Rules updated
+	Rules updated (v6)
+	ubuntu@ip-10-10-11-150:~$ sudo ufw enable
+	Command may disrupt existing ssh connections. Proceed with operation (y|n)? y
+	Firewall is active and enabled on system startup
+	ubuntu@ip-10-10-11-150:~$ sudo ufw status
+	Status: active
+
+	To                         Action      From
+	--                         ------      ----
+	8080                       ALLOW       Anywhere
+	OpenSSH                    ALLOW       Anywhere
+	8080 (v6)                  ALLOW       Anywhere (v6)
+	OpenSSH (v6)               ALLOW       Anywhere (v6)
+
+
+For Password:
+-------------
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+
+Remove Jenkins from Ubuntu:
+---------------------------
+
+First - stop Jenkins service:
+
+sudo service jenkins stop
+
+Next - delete:
+
+sudo apt-get remove --purge jenkins
+
+sudo rm /etc/apt/sources.list.d/jenkins.list
+
+sudo rm /etc/apt/sources.list.d/jenkins.list.save
+
+
+Remove Jenkins in Linux:
+------------------------
+
+sudo service jenkins stop
+
+sudo yum remove jenkins
+
+sudo rm -r /var/lib/jenkins
+
+		

@@ -1,9 +1,0 @@
----
-- name: this is sample playbook to deploy the artifcats into tomact server
-  hosts: webservers
-  become: true
-  tasks:
-  - name: copy artifacts
-    copy:
-     src: /opt/artifacts/webapp/webapp.war
-     dest: /opt/apache-tomcat-9.0.48/webapps

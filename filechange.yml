@@ -1,0 +1,74 @@
+---
+- name: using file module
+  hosts: all
+  tasks:
+    - name: create a file
+      file:
+        path: /tmp/removeme
+        owner: ansible
+        mode: 0640
+        state: touch
+        setype: public_content_rw_t
+...
+
+
+---
+- name: some file modules
+  hosts: all
+  tasks:
+    - name: using copy module
+      copy:
+        src: /etc/hosts
+        dest: /tmp/
+    - name: add some lines to /tmp/hosts
+      blockinfile:
+        path: /tmp/hosts
+        block: |
+          192.168.4.110 host1.example.com
+          192.168.4.120 host2.example.com
+        state: present
+    - name: verify file checksum
+      stat:
+        path: /tmp/hosts
+        checksum_algorithm: md5
+      register: result
+    - debug:
+        msg: "The checksum of /tmp/hosts is {{result.stat.checksum }}"
+    - name: fetch a file
+      fetch: 
+        src: /tmp/hosts
+        dest: /tmp/ 
+...
+
+
+---
+- name: configure VSFTPD using a template
+  hosts: all
+  vars:
+    anonymous_enable: yes
+    local_enable: yes
+    write_enable: yes
+    anon_upload_enable: yes
+  tasks:
+    - name: install vsftpd
+      yum:
+        name: vsftpd
+    - name: use template to copy FTP config
+      template:
+        src: vsftpd.j2
+        dest: /etc/vsftpd/vsftpd.conf
+...
+
+{% for hosts in groups['all'] %}
+{{hostvars[host]['ansible_facts']['default_ipv4']['address']}} {{hostvars[host]['ansible_facts']['fqdn']}} {{hostvars[host]['ansible_facts']['hostname']}}
+{% endfor %}
+
+
+---
+- name: update /etc/hosts file dynamically
+  hosts: all
+  tasks:
+    - name: update /etc/hosts
+      template:
+        src: templates/hosts.j2
+        dest: /etc/hosts

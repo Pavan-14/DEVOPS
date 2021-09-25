@@ -1,0 +1,25 @@
+---
+- name: jenkins setup
+  hosts: all
+  become: true
+  tasks:
+    - name: install pre-requisite java
+      yum:
+        name: java
+        state: present
+    - name: get link from source
+      get_url:
+        url: http://pkg.jenkins-ci.org/redhat/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+    - name: Import GPG Key
+      rpm_key:
+        state: present
+        key: https://pkg.jenkins.io/redhat/jenkins.io.key
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: present
+    - name: start jenkins
+      service:
+        name: jenkins
+        state: started

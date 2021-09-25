@@ -1,0 +1,13 @@
+---
+- name: when demo
+  hosts: all
+  tasks:
+    - name: install nginx package 
+      yum:
+        name: nginx
+        state: present
+      when: 
+        ( ansible_distribution == "RedHat" and ansible_memfree_mb > 512 )
+        or
+        ( ansible_distribution == "CentOS" and ansible_memfree_mb > 600 )
+...

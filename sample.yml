@@ -1,0 +1,59 @@
+
+---
+- name: this is sample playbook to install some packages in slave nodes
+  hosts: all
+  become: true
+  vars:
+   port: 800
+  tasks:
+  - name: install httpd
+    yum:
+     name: httpd
+     state: present
+    when: ansible_os_family == "RedHat"
+  - name: start httpd
+    service:
+     name: httpd
+     state: started
+    when: ansible_os_family == "RedHat"
+  - name: changes in configuration port
+    lineinfile:
+     path: /etc/httpd/conf/httpd.conf
+     regexp: '^Listen'
+     insertafter: '^#Listen'
+     line: Listen {{port}}
+    when: ansible_os_family == "RedHat"
+    notify: restart httpd
+  - name: insatll apache2
+    apt:
+     name: apache2
+     state: present
+    when: ansible_os_family == "Debian"
+  - name: start apache2
+    service:
+     name: apache2
+     state: started
+    when: ansible_os_family == "Debian"
+  - name: changes in configuration port
+    lineinfile:
+     path: /etc/apache2/ports.conf
+     regexp: '^Listen'
+     insertafter: "^# /etc/apache2/sites-enabled/000-default.conf"
+     line: Listen {{port}}
+    when: ansible_os_family == "Debian"
+    tags: change in port
+    notify: restart apache2
+  - name: install git
+    yum:
+     name: git
+     state: present
+    when: ansible_os_family == "RedHat"
+  handlers:
+  - name: restart httpd
+    service:
+     name: httpd
+     state: restarted
+  - name: restart apache2
+    service:
+     name: apache2
+     state: restarted

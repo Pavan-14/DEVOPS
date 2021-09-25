@@ -1,0 +1,26 @@
+---
+-name:"this is sample playbook to install some packages in slave nodes"
+ hosts:all
+ become:true
+ tasks:
+   - name: install httpd
+     yum:
+       name: httpd
+       state: present
+   - name:"start httpd"
+     service:
+       name: httpd
+       state: started
+   - name:"insatll apache2"
+     apt:
+       name: apache2
+       state: present
+   - name:"start apache2
+     service:
+       name: apache2
+       state: started
+   - name:"install git"
+     yum:
+       name: git
+       state: present
+
